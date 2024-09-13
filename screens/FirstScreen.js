@@ -8,7 +8,7 @@ const App = () => {
   };
 
   return (
-    
+    <ScrollView contentContainerStyle={styles.scrollView}>
     <View style={styles.container}>
     <Image source={require('./assets/logo.jpg')} style={styles.image} />
     <Text style={styles.text1}>Welcome User</Text>
@@ -26,6 +26,7 @@ const App = () => {
       title="Sign Up" // props.navigation.navigate
     />
     </View>
+    </ScrollView>
   );
 };
 
@@ -51,9 +52,20 @@ text1: {
     padding: 10,
     marginBottom: 30,
   },
+  scrollView: {
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });
 
 export default FirstScreen;
+
+
+
+
+
+
 
 
 
