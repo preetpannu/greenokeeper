@@ -8,7 +8,7 @@ const App = () => {
   };
 
   return (
-    
+    <ScrollView contentContainerStyle={styles.scrollView}>
     <View style={styles.container}>
      <Text style={styles.text}>GreenOKeeper</Text>
      <View style={styles.buttonContainer}>
@@ -31,6 +31,7 @@ const App = () => {
     <Image source={require('./assets/GreenOKeeper.png')} style={styles.image} />
      <Text style={styles.text2}>GreenoKeeper is an innovative app designed to promote sustainability through efficient waste material recycling and collection. Developed by high school student Preet Pannu, the app offers a range of user-friendly features including pickup and drop-off services, the ability to choose convenient time slots, and a unique tool to calculate CO2 emissions saved. These features empower communities to manage their waste responsibly while fostering greater awareness and participation in recycling efforts. By providing these comprehensive services, GreenoKeeper aims to make a significant impact on environmental conservation and encourage a more sustainable future.</Text>
     </View>
+    </ScrollView>
   );
 };
 
@@ -68,6 +69,12 @@ text1: {
     width: '80%',
     marginVertical: 10,
   },
+  scrollView: {
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });
 
 export default HomeScreen;
+
