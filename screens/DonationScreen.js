@@ -1,19 +1,34 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, ScrollView, TouchableOpacity, Image, Alert } from 'react-native';
+import { Formik } from 'formik';
+import * as Yup from 'yup';
+import { View, Text, TextInput, Button, StyleSheet, ScrollView, TouchableOpacity, Image, Alert, Picker } from 'react-native';
 
+// const App = () => {
+//   const onPress = () => {
+//     alert('Button pressed!');
+//   };
+  // const [text, setText] = useState('');
+  // const [form, setForm] = useState({
+  //  material: '',
+  //  amount: '',
+  //  dropoff: '',
+  //  pickup: '',
+  //  number: '',
+  //  });
 
-const App = () => {
-  const onPress = () => {
-    alert('Button pressed!');
-  };
-  const [text, setText] = useState('');
-  const [form, setForm] = useState({
-   material: '',
-   amount: '',
-   dropoff: '',
-   pickup: '',
-   number: '',
-   });
+   const DonationScreen = ({ navigation }) => {
+    const donationSchema = Yup.object().shape({
+      itemType: Yup.string().required('Required'),
+      quantity: Yup.number().min(1, 'Quantity must be at least 1 kg').required('Required'),
+      donationOption: Yup.string().required('Required'),
+      timeSlot: Yup.string().required('Required'),
+      address: Yup.string().when('donationOption', {
+        is: 'Pick Up',
+        then: Yup.string().required('Required for pick-up option'),
+        otherwise: Yup.string(),
+      }),
+      phoneNumber: Yup.string().matches(/^\+971 \d{2} \d{7}$/, 'Invalid phone number').required('Required'),
+    });
 
    const reducer= (state, action) => {
     // state === {count:number}
@@ -39,135 +54,137 @@ const App = () => {
 
 
   return (
+    <Formik
+      initialValues={{
+        itemType: '',
+        quantity: '',
+        donationOption: 'Drop Off',
+        timeSlot: '',
+        address: '',
+        phoneNumber: '',
+      }}
+      validationSchema={donationSchema}
+      onSubmit={(values) => {
+        // Handle donation scheduling logic
+        navigation.navigate('Confirmation', { values });
+      }}
+    >
     <ScrollView contentContainerStyle={styles.scrollView}>
     <View style={styles.container}>
     <Image source={require('./assets/GreenOKeeper.png')} style={styles.image} />
      
-     <Text style={styles.text1}> Material (paper,plastic, electronics, glass, metal)</Text>
+     <Text style={styles.text1}> Material</Text>
        <TextInput
          style={styles.input}
          placeholder="Material"
          value={form.material}
          onChangeText={(value) => handleChange('material', value)}
        />
+       <Picker
+            selectedValue={values.itemType}
+            onValueChange={(value) => setFieldValue('itemType', value)}
+            style={styles.picker}
+          >
+            <Picker.Item label="Select Item" value="" />
+            <Picker.Item label="Paper" value="Paper" />
+            <Picker.Item label="Plastic" value="Plastic" />
+            <Picker.Item label="Glass" value="Glass" />
+            <Picker.Item label="Metal" value="Metal" />
+            <Picker.Item label="Old Electronics" value="Old Electronics" />
+          </Picker>
+          {errors.itemType && touched.itemType ? (
+            <Text style={styles.error}>{errors.itemType}</Text>
+          ) : null}
        
-<Text style={styles.text1}>Amount (kg)</Text>
+<Text style={styles.text1}>Amount (kg):  {state.count}</Text>
    <Button 
-      title='increase count' 
+      title='+' 
       onPress= {() => {
         // counter++ === wrong
         // setCounter(counter+1)
-        dispatch({type:'increment', payload: 5})
+        dispatch({type:'increment', payload: 2})
       }}
     />
     <Button 
-      title='decrease count'
+      title='-'
       onPress= {() => {
         // counter++
         // setCounter(counter-1)
         dispatch({type:'decrement', payload: 1})
       }}
     />
-    <Text>current count: {state.count}</Text> 
+    
       <Text style={styles.text1}>Collection Mode</Text>
-     <View style={styles.buttonContainer1}>
-        <Button title="Drop Off" onPress={() => {}} />
-        <Button title="Pick Up"  onPress={onPress} />
-      </View>
+      <Picker
+            selectedValue={values.donationOption}
+            onValueChange={(value) => setFieldValue('donationOption', value)}
+            style={styles.picker}
+          >
+            <Picker.Item label="Drop Off" value="Drop Off" />
+            <Picker.Item label="Pick Up" value="Pick Up" />
+          </Picker>
+
     <Text style={styles.text1}>Pick Up Point</Text>
-      <TextInput
-         style={styles.input}
-         placeholder="Address"
-         value={form.pickup}
-         onChangeText={(value) => handleChange('pickup', value)}
-       />
-    <TouchableOpacity onPress={() => {}}>
-        <Text style={styles.link}>display on maps</Text>
-      </TouchableOpacity>
+      {values.donationOption === 'Pick Up' && (
+            <>
+              <TextInput
+                style={styles.input}
+                onChangeText={handleChange('address')}
+                onBlur={handleBlur('address')}
+                value={values.address}
+              />
+              {errors.address && touched.address ? (
+                <Text style={styles.error}>{errors.address}</Text>
+              ) : null}
+            </>
+          )}
+
       <Text style={styles.text1}>Drop Off Point</Text>
       <Text style={styles.text2}>301, Universal Travel and Tourism, Muroor, Abu Dhabi</Text>
       <TouchableOpacity onPress={() => {}}>
         <Text style={styles.link}>display on maps</Text>
       </TouchableOpacity>
+
       <Text style={styles.text1}>Time Slot</Text>
-     <View style={styles.buttonContainer1}>
-        <Button title="Saturday" onPress={() => {}} />
-        <Button title="Sunday"  onPress={onPress} />
-      </View>
-    <View style={styles.buttonContainer}>
-        <Button title="10:00 am" onPress={() => {}} />
-        <Button title="11:00 am"  onPress={onPress} />
-        <Button title="5:00 pm" onPress={() => {}} />
-        <Button title="6:00 pm"  onPress={onPress} />
-      </View>
+      <Picker
+            selectedValue={values.timeSlot}
+            onValueChange={(value) => setFieldValue('timeSlot', value)}
+            style={styles.picker}
+          >
+            <Picker.Item label="Select Time Slot" value="" />
+            <Picker.Item label="Saturday 10:00am" value="Saturday 10:00am" />
+            <Picker.Item label="Saturday 6:00pm" value="Saturday 6:00pm" />
+            <Picker.Item label="Sunday 10:00am" value="Sunday 10:00am" />
+            <Picker.Item label="Sunday 6:00pm" value="Sunday 6:00pm" />
+          </Picker>
+          {errors.timeSlot && touched.timeSlot ? (
+            <Text style={styles.error}>{errors.timeSlot}</Text>
+          ) : null}
+
       <Text style={styles.text1}>Contact Information</Text>
        <TextInput
          style={styles.input}
+         onChangeText={handleChange('phoneNumber')}
+         onBlur={handleBlur('phoneNumber')}
          placeholder="+971 XX XXX XXXX"
          keyboardType="phone-pad"
-         value={form.number}
-         onChangeText={(value) => handleChange('number', value)}
+         value={values.phoneNumber}
        />
+       {errors.phoneNumber && touched.phoneNumber ? (
+            <Text style={styles.error}>{errors.phoneNumber}</Text>
+          ) : null}
        
       <Text style={styles.text1}>Contact me: +971 50 XXX XXXX</Text>
-       <Button title="Submit" onPress={handleSubmit} />
-
-       <Text style={styles.text1}>Amount (kg)</Text>
-   <TextInput
-         style={styles.input}
-         placeholder="Amount"
-         value={form.amount}
-         onChangeText={(value) => handleChange('amount', value)}
-       />
-      <Text style={styles.text1}>Collection Mode</Text>
-     <View style={styles.buttonContainer1}>
-        <Button title="Drop Off" onPress={() => {}} />
-        <Button title="Pick Up"  onPress={onPress} />
-      </View>
-    <Text style={styles.text1}>Pick Up Point</Text>
-      <TextInput
-         style={styles.input}
-         placeholder="Address"
-         value={form.pickup}
-         onChangeText={(value) => handleChange('pickup', value)}
-       />
-    <TouchableOpacity onPress={() => {}}>
-        <Text style={styles.link}>display on maps</Text>
-      </TouchableOpacity>
-      <Text style={styles.text1}>Drop Off Point</Text>
-      <Text style={styles.text2}>301, Universal Travel and Tourism, Muroor, Abu Dhabi</Text>
-      <TouchableOpacity onPress={() => {}}>
-        <Text style={styles.link}>display on maps</Text>
-      </TouchableOpacity>
-      <Text style={styles.text1}>Time Slot</Text>
-     <View style={styles.buttonContainer1}>
-        <Button title="Saturday" onPress={() => {}} />
-        <Button title="Sunday"  onPress={onPress} />
-      </View>
-    <View style={styles.buttonContainer}>
-        <Button title="10:00 am" onPress={() => {}} />
-        <Button title="11:00 am"  onPress={onPress} />
-        <Button title="5:00 pm" onPress={() => {}} />
-        <Button title="6:00 pm"  onPress={onPress} />
-      </View>
-      <Text style={styles.text1}>Contact Information</Text>
-       <TextInput
-         style={styles.input}
-         placeholder="+971 XX XXX XXXX"
-         keyboardType="phone-pad"
-         value={form.number}
-         onChangeText={(value) => handleChange('number', value)}
-       />
+       <Button title="Schedule Donation" onPress={handleSubmit} />
        
        <Button 
       onPress={() => navigation.navigate('ThankYou')} // console.log('Button Pressed') 
-      title="Submit" // props.navigation.navigate
+      title="Done" // props.navigation.navigate
     />
        
-     
    </View>
 </ScrollView>
-
+</Formik>
   );
 };
 
@@ -241,4 +258,6 @@ text1: {
 });
 
 export default DonationScreen;
+
+
 
