@@ -9,7 +9,7 @@ const App = () => {
   const [text, setText] = useState('');
 
   return (
-    
+    <ScrollView contentContainerStyle={styles.scrollView}>
     <View style={styles.container}>
     <Image source={require('./assets/GreenOKeeper.png')} style={styles.image} />
     <Text style={styles.text1}>Sign In</Text>
@@ -44,6 +44,7 @@ const App = () => {
         <Text style={styles.link}>Privacy Policy</Text>
       </TouchableOpacity>
     </View>
+    </ScrollView>
   );
 };
 
@@ -83,6 +84,12 @@ link: {
     color: '#007BFF',
     marginVertical: 5,
   },
+  scrollView: {
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });
 
 export default LogInScreen;
+
