@@ -10,11 +10,12 @@ const App = () => {
   };
   const [text, setText] = useState('');
   const [password,setPassword] = useState ('');
-  const RegistrationScreen = ({ navigation }) => {
-    const registrationSchema = Yup.object().shape({
+  const SignUpScreen = ({ navigation }) => {
+    const signupSchema = Yup.object().shape({
       email: Yup.string().email('Invalid email').required('Required'),
       password: Yup.string().min(6, 'Password too short!').required('Required'),
     });
+  };
 
   return (
     <Formik
@@ -134,4 +135,5 @@ text1: {
 });
 
 export default SignUpScreen;
+
 
